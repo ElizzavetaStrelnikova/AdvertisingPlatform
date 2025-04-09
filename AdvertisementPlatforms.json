@@ -1,0 +1,46 @@
+﻿{
+	"platforms": [
+		{
+			"name": "Яндекс.Директ",
+			"base_path": "/ru",
+			"children": []
+		},
+		{
+			"name": "Ревдинский рабочий",
+			"base_path": "/ru/svrd",
+			"children": [
+				{
+					"path": "/revda",
+					"name": "Ревда"
+				},
+				{
+					"path": "/pervik",
+					"name": "Первоуральск"
+				}
+			]
+		},
+		{
+			"name": "Газета уральских москвичей",
+			"base_path": "/ru",
+			"children": [
+				{
+					"path": "/msk",
+					"name": "Москва"
+				},
+				{
+					"path": "/permobl",
+					"name": "Пермский край"
+				},
+				{
+					"path": "/chelobl",
+					"name": "Челябинская область"
+				}
+			]
+		},
+		{
+			"name": "Крутая реклама",
+			"base_path": "/ru/svrd",
+			"children": []
+		}
+	]
+}

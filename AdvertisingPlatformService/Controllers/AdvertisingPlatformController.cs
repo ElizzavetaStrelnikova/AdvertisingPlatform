@@ -1,32 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AdvertisingPlatformService.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
-namespace AdvertisingPlatformApp.Controllers;
+namespace AdvertisingPlatformService.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/platforms")]
 public class AdvertisingPlatformController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+    private readonly IAdvertisingPlatformService advertisingPlatformService;
 
-    private readonly ILogger<AdvertisingPlatformController> _logger;
-
-    public AdvertisingPlatformController(ILogger<AdvertisingPlatformController> logger)
+    public AdvertisingPlatformController(IAdvertisingPlatformService advertisingPlatformService)
     {
-        _logger = logger;
+        advertisingPlatformService = advertisingPlatformService;
     }
 
     [HttpGet]
-    public IEnumerable<WeatherForecast> Get()
+    public async Task<IActionResult> GetAllAdvertisingPlatforms()
     {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        })
-        .ToArray();
+        var platforms = await advertisingPlatformService.GetAllAdvertisingPlatforms();
+        return Ok(platforms);
+    }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> GetAdvertisingPlatformsByLocation([FromQuery] string location)
+    {
+        var platforms = await advertisingPlatformService.GetAdvertisingPlatformsByLocation(location);
+        return Ok(platforms);
     }
 }
