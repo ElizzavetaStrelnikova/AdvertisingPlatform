@@ -1,6 +1,6 @@
 ﻿namespace AdvertisingPlatformService.Interfaces
 {
-    public class AdvertismentLocation
+    public interface IAdvertisementLocation
     {
     }
 }

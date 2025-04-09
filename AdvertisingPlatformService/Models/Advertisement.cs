@@ -1,6 +1,6 @@
 ﻿namespace AdvertisingPlatformService.Models
 {
-    public class Advertisment
+    public class Advertisement
     {
     }
 }
