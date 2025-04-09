@@ -1,19 +1,19 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace AdvertisingPlatformApp.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public class AdvertisingPlatformController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ILogger<AdvertisingPlatformController> _logger;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public AdvertisingPlatformController(ILogger<AdvertisingPlatformController> logger)
     {
         _logger = logger;
     }
