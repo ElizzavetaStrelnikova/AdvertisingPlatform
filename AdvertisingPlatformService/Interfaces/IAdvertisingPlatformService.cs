@@ -4,7 +4,8 @@ namespace AdvertisingPlatformService.Interfaces
 {
     public interface IAdvertisingPlatformService
     {
-        Task<IEnumerable<AdvertisingPlatform>> GetAllAdvertisingPlatforms();
-        Task<IEnumerable<AdvertisingPlatform>> GetAdvertisingPlatformsByLocation(string location);
+        Task<IEnumerable<Root>> GetAllData();
+        Task<IEnumerable<Platform>> GetAllAdvertisingPlatforms();
+        Task<IEnumerable<Platform>> GetAdvertisingPlatformsByLocation(string location);
     }
 }
