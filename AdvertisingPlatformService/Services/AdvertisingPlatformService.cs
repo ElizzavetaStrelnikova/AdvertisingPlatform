@@ -1,7 +1,6 @@
 ﻿using AdvertisingPlatformService.Extensions;
 using AdvertisingPlatformService.Interfaces;
 using AdvertisingPlatformService.Models;
-using System.Text.Json;
 
 namespace AdvertisingPlatformService.Services
 {
@@ -9,6 +8,7 @@ namespace AdvertisingPlatformService.Services
     {
         private static readonly List<Platform> advertisingPlatforms = [];
         private static readonly string pathToDataFile = "Data:DataFilePath";
+        private readonly IAdvertisingPlatformService advertisingPlatformService;
 
         /// <summary>
         /// Gets a json file and deserializes it.
@@ -22,24 +22,42 @@ namespace AdvertisingPlatformService.Services
         }
 
         /// <summary>
-        /// The method gets all the advertising platforms from the file.
+        /// The method gets all the advertising platforms from the file asynchronously.
         /// </summary>
         /// <returns>List of all the advertising platforms.</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        Task<IEnumerable<Platform>> IAdvertisingPlatformService.GetAllAdvertisingPlatforms()
+        async Task<IEnumerable<Platform>> IAdvertisingPlatformService.GetAllAdvertisingPlatforms()
         {
-            
+            var data = await advertisingPlatformService.GetAllData();
+
+            var platforms = data
+                .SelectMany(x => x.platforms);
+
+            advertisingPlatforms.Clear();
+            advertisingPlatforms.AddRange(platforms);
+
+            return advertisingPlatforms; 
         }
 
         /// <summary>
-        /// The method gets the advertising platforms in the specific location from the file.
+        /// The method gets the advertising platforms in the specific location from the file asynchronously.
         /// </summary>
         /// <param name="location"></param>
         /// <returns>List of advertising platforms for a specific location.</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        Task<IEnumerable<Platform>> IAdvertisingPlatformService.GetAdvertisingPlatformsByLocation(string location)
+        async Task<IEnumerable<Platform>> IAdvertisingPlatformService.GetAdvertisingPlatformsByLocation(string location)
         {
-            throw new NotImplementedException();
+            var data = await advertisingPlatformService.GetAllData();
+
+            var matchingPlatforms = data
+                .SelectMany(root => root.platforms)
+                .Where(platform => platform.base_path == location ||
+                       (platform.children != null &&
+                        platform.children.Any(child => child.path == location)))
+                .Distinct(); 
+
+            advertisingPlatforms.Clear();
+            advertisingPlatforms.AddRange(matchingPlatforms);
+
+            return advertisingPlatforms;
         }
     }
 }
