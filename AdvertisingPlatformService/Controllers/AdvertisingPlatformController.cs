@@ -1,17 +1,17 @@
-﻿using AdvertisingPlatformService.Interfaces;
+﻿using AdvertisingPlatform.Service.Interfaces;
+using AdvertisingPlatform.Service.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AdvertisingPlatformService.Controllers;
+namespace AdvertisingPlatform.Service.Controllers;
 
 [ApiController]
 [Route("api/platforms")]
 public class AdvertisingPlatformController : ControllerBase
 {
-    private readonly IAdvertisingPlatformService advertisingPlatformService;
-
-    public AdvertisingPlatformController(IAdvertisingPlatformService advertisingPlatformService)
+    private readonly IAdvertisingPlatformService<Platform> advertisingPlatformService;
+    public AdvertisingPlatformController(IAdvertisingPlatformService<Platform> advertisingPlatformService)
     {
-        advertisingPlatformService = advertisingPlatformService;
+        this.advertisingPlatformService = advertisingPlatformService;
     }
 
     [HttpGet]

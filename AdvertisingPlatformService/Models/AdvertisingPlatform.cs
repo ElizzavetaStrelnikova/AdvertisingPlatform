@@ -1,6 +1,6 @@
-﻿namespace AdvertisingPlatformService.Models
+﻿namespace AdvertisingPlatform.Service.Models
 {
-    public class Child
+    public class PlatformChild
     {
         public string path { get; set; }
         public string name { get; set; }
@@ -10,7 +10,7 @@
     {
         public string name { get; set; }
         public string base_path { get; set; }
-        public List<Child> children { get; set; }
+        public List<PlatformChild> children { get; set; }
     }
 
     public class Root

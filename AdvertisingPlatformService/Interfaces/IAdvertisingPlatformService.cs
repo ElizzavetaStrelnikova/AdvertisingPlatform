@@ -1,11 +1,9 @@
-﻿using AdvertisingPlatformService.Models;
-
-namespace AdvertisingPlatformService.Interfaces
+﻿namespace AdvertisingPlatform.Service.Interfaces
 {
-    public interface IAdvertisingPlatformService
+    public interface IAdvertisingPlatformService<T> where T : class
     {
-        Task<IEnumerable<Root>> GetAllData();
-        Task<IEnumerable<Platform>> GetAllAdvertisingPlatforms();
-        Task<IEnumerable<Platform>> GetAdvertisingPlatformsByLocation(string location);
+        Task<TData> GetAllData<TData>(string path) where TData : class;
+        Task<IEnumerable<T>> GetAllAdvertisingPlatforms();
+        Task<IEnumerable<T>> GetAdvertisingPlatformsByLocation(string location);
     }
 }

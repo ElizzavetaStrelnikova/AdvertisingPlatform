@@ -14,7 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{02EA681E-C
 		AdvertisementPlatforms.json = AdvertisementPlatforms.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvertisingPlatformService", "AdvertisingPlatformService\AdvertisingPlatformService.csproj", "{2301B83A-1AED-BBA3-DFEE-61E9E94686F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvertisingPlatform.Service", "AdvertisingPlatformService\AdvertisingPlatform.Service.csproj", "{2301B83A-1AED-BBA3-DFEE-61E9E94686F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvertisingPlatformServiceTest", "AdvertisingPlatformServiceTest\AdvertisingPlatformServiceTest.csproj", "{2E159A68-269F-42C6-9C13-AC762532EBAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{2301B83A-1AED-BBA3-DFEE-61E9E94686F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2301B83A-1AED-BBA3-DFEE-61E9E94686F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2301B83A-1AED-BBA3-DFEE-61E9E94686F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E159A68-269F-42C6-9C13-AC762532EBAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E159A68-269F-42C6-9C13-AC762532EBAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E159A68-269F-42C6-9C13-AC762532EBAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E159A68-269F-42C6-9C13-AC762532EBAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

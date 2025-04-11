@@ -1,0 +1,19 @@
+﻿{
+  "platforms": [
+    {
+      "name": "Platform A",
+      "base_path": "/location1",
+      "children": [
+        {
+          "path": "/sublocation1",
+          "name": "Sub A"
+        }
+      ]
+    },
+    {
+      "name": "Platform B",
+      "base_path": "/location2",
+      "children": []
+    }
+  ]
+}
