@@ -7,27 +7,21 @@ namespace AdvertisingPlatform.Service.Services
     public class AdvertisingPlatformService : IAdvertisingPlatformService<Platform>
     {
         private readonly ILogger<AdvertisingPlatformService> _logger;
-        private readonly List<Platform> _advertisingPlatforms = new();
+        private DateTime _lastLoadTime;
+        private List<Platform> _advertisingPlatforms = new();
         private readonly string _jsonPath;
+        private readonly SemaphoreSlim _cacheLock = new(1, 1);
 
         public AdvertisingPlatformService(IConfiguration config, ILogger<AdvertisingPlatformService> logger)
         {
             _jsonPath = config["Data:DataFilePath"];
             _logger = logger;
-
             _logger.LogInformation("Service initialized with JSON path: {Path}", _jsonPath);
+
+            _ = InitializeDataAsync();
         }
 
-        /// <summary>
-        /// Gets a json file and deserializes it.
-        /// </summary>
-        /// <returns>Completed task of a deserialized json.</returns>
-        public async Task<TData> GetAllData<TData>(string path) where TData : class
-        {
-            string json = await File.ReadAllTextAsync(Path.Combine(path, _jsonPath));
-            return JsonSerializer.Deserialize<TData>(json)
-                   ?? throw new InvalidOperationException("Deserialization failed");
-        }
+
 
         /// <summary>
         /// The method gets all the advertising platforms from the file asynchronously.
@@ -35,25 +29,25 @@ namespace AdvertisingPlatform.Service.Services
         /// <returns>List of all the advertising platforms.</returns>
         public async Task<IEnumerable<Platform>> GetAllAdvertisingPlatforms()
         {
-            _logger.LogInformation("Fetching all advertising platforms");
-
             try
             {
-                var data = await GetAllData<Root>(_jsonPath);
-
-                _logger.LogDebug("Retrieved {Count} root items", data?.platforms?.Count ?? 0);
-
-                _advertisingPlatforms.Clear();
-                _advertisingPlatforms.AddRange(data.platforms);
-
-                _logger.LogInformation("Successfully loaded {Count} platforms", _advertisingPlatforms.Count);
-
-                return _advertisingPlatforms;
+                await _cacheLock.WaitAsync();
+                if (IsCacheStale())
+                {
+                    await ReloadCacheAsync();
+                }
+                return new List<Platform>(_advertisingPlatforms); 
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to load advertising platforms");
-                throw;
+                return _advertisingPlatforms.Count > 0
+                    ? new List<Platform>(_advertisingPlatforms)
+                    : Enumerable.Empty<Platform>();
+            }
+            finally
+            {
+                _cacheLock.Release();
             }
         }
 
@@ -64,17 +58,87 @@ namespace AdvertisingPlatform.Service.Services
         /// <returns>List of advertising platforms for a specific location.</returns>
         public async Task<IEnumerable<Platform>> GetAdvertisingPlatformsByLocation(string location)
         {
-            var data = await GetAllData<Root>(_jsonPath);
-            if (data?.platforms == null) return Enumerable.Empty<Platform>();
+            if (string.IsNullOrEmpty(location))
+                return Enumerable.Empty<Platform>();
 
-            var matchingPlatforms = data.platforms
-                .Where(p => p.base_path == location ||
-                       (p.children?.Any(c => c.path == location) == true))
-                .ToList();
+            try
+            {
+                await _cacheLock.WaitAsync();
+                if (IsCacheStale())
+                {
+                    await ReloadCacheAsync();
+                }
 
-            _advertisingPlatforms.Clear();
-            _advertisingPlatforms.AddRange(matchingPlatforms);
-            return _advertisingPlatforms;
+                return _advertisingPlatforms
+                    .Where(p => p.base_path == location ||
+                           (p.children?.Any(c => c.path == location) == true))
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to filter platforms by location: {location}");
+                return Enumerable.Empty<Platform>();
+            }
+            finally
+            {
+                _cacheLock.Release();
+            }
         }
+
+        #region Private Methods
+        /// <summary>
+        /// Creates an instance of data at first using a service.
+        /// </summary>
+        /// <returns>Cached data.</returns>
+        private async Task InitializeDataAsync()
+        {
+            try
+            {
+                await _cacheLock.WaitAsync();
+                await ReloadCacheAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Initial data load failed");
+            }
+            finally
+            {
+                _cacheLock.Release();
+            }
+        }
+        /// <summary>
+        /// Checks if cached data exists and it is valid.
+        /// </summary>
+        /// <returns>True/False</returns>
+        private bool IsCacheStale()
+        {
+            return !File.Exists(_jsonPath) ||
+                   File.GetLastWriteTimeUtc(_jsonPath) > _lastLoadTime;
+        }
+
+        /// <summary>
+        /// Reads the data from the json, deserializes it and save it to cache for a sooner use..
+        /// </summary>
+        /// <returns>Cached data.</returns>
+        private async Task ReloadCacheAsync()
+        {
+            try
+            {
+                string json = await File.ReadAllTextAsync(_jsonPath);
+                var data = JsonSerializer.Deserialize<Root>(json) ?? new Root();
+
+                _advertisingPlatforms.Clear();
+                _advertisingPlatforms.AddRange(data.platforms ?? Enumerable.Empty<Platform>());
+                _lastLoadTime = DateTime.UtcNow;
+
+                _logger.LogInformation("Cache reloaded. Platforms count: {Count}", _advertisingPlatforms.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Cache reload failed");
+                throw;
+            }
+        }
+        #endregion
     }
 }
